@@ -12,7 +12,7 @@ if [[ $# -lt 1 ]]
 then
     cp uwsgi/Dockerfile.default uwsgi/Dockerfile
     cd uwsgi/
-    sudo docker build --no-cache -t uwsgi-webtier .
+    sudo docker build --no-cache --network host -t uwsgi-webtier .
     cd ../
 # custom Python build
 else
@@ -53,7 +53,7 @@ then
     do
         cd "$d"
         echo "Building image for $d-webtier"
-        sudo docker build --no-cache -t "$d"-webtier .
+        sudo docker build --no-cache --network host -t "$d"-webtier .
         echo "-------------------------------------------------------------"
         echo
         cd ../ 

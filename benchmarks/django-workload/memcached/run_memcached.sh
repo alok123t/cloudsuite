@@ -4,7 +4,7 @@
 # Parameters: $1 = the IP; $2 = the port; $3 = the name of the service
 
 wait_port() {
-  while ! ncat -w 5 "$1" "$2"; do
+  while ! netcat -w 5 "$1" "$2"; do
     echo "Waiting for $3 ..."
     sleep 3
   done
@@ -12,7 +12,7 @@ wait_port() {
 
 
 # Start memcached container
-echo "Staring memcached container"
+echo "Starting memcached container"
 sudo docker run -tid --name memcached_container --network host memcached-webtier
 
 wait_port localhost 11211 memcached
