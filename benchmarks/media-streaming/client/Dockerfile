@@ -3,9 +3,9 @@ FROM ubuntu:14.04
 MAINTAINER Alexandros Daglis <alexandros.daglis@epfl.ch>
 
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
-      bc \
-      build-essential \
-      libssl-dev \
+    bc \
+    build-essential \
+    libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
 COPY files /root/
@@ -16,6 +16,9 @@ RUN set -x \
     && /root/videoperf/configure \
     && make \
     && make install
+
+RUN mkdir -p /videos/logs
+RUN cp /root/logs/cl* /videos/logs/
 
 RUN mkdir /output
 VOLUME ["/output"]
