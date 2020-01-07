@@ -64,11 +64,15 @@ The client will issue a mix of requests for different videos of various qualitie
 ## Run benchmark on multiple VM
 
 ### Run Dataset and Server on Host 1
+Run Dataset
+
     $ docker pull cloudsuite/media-streaming:dataset
     $ docker run --name streaming_dataset cloudsuite/media-streaming:dataset
-
 Copy logs folder from container to Host1
+    
     $ sudo docker cp ${CONTAINER_ID}:/videos/logs /path/on/host1
+
+Run Server
 
     $ docker pull cloudsuite/media-streaming:server
     $ docker run -d --name streaming_server --volumes-from streaming_dataset --net host cloudsuite/media-streaming:server
@@ -76,12 +80,18 @@ Copy logs folder from container to Host1
 ### Run Client on Host 2
 Copy logs folder from Host1 to the following path on Host2 
 
-    $ rsync -zarvh username@HOST1:/path/on/host1 /path/on/host2/cloudsuite/benchmarks/media-streaming/client/files/
+    $ rsync -zarvh username@HOST1:/path/on/host1/logs /path/on/host2/cloudsuite/benchmarks/media-streaming/client/files/
+
+Note: Pass public key file, in case of authentication error using -e "ssh -i /path/to/.pemfile" to the rsync command
 
 The ${SERVER_IP} is the IP of Host1
 
+Pass additional parameter "True" while running client
+
+Run Client
+
     $ docker pull cloudsuite/media-streaming:client
-    $ docker run -t --name=streaming_client -v /path/to/output:/output --net host cloudsuite/media-streaming:client ${SERVER_IP}
+    $ docker run -t --name=streaming_client -v /path/to/output:/output --net host cloudsuite/media-streaming:client ${SERVER_IP} True
 
   [datasetdocker]: https://github.com/parsa-epfl/cloudsuite/blob/master/benchmarks/media-streaming/dataset/Dockerfile "Dataset Dockerfile"  
 

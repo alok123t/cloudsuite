@@ -17,9 +17,6 @@ RUN set -x \
     && make \
     && make install
 
-RUN mkdir -p /videos/logs
-RUN cp /root/logs/cl* /videos/logs/
-
 RUN mkdir /output
 VOLUME ["/output"]
 
