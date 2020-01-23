@@ -48,6 +48,59 @@ in a separate container.
 For instructions on how to install docker, please refer to:
 <https://docs.docker.com/engine/installation/linux/ubuntu/>
 
+# Running benchmark on multiple VMs
+
+## Run Memcached on Host 1
+	$ cd cloudsuite/benchmarks/django-workload/memcached/
+	$ ./build_memcached.sh
+	$ ./run_memcached.sh
+
+## Run Cassandra on Host 2
+	$ cd cloudsuite/benchmarks/django-workload/cassandra/
+	$ ./build_cassandra.sh
+	$ ./run_cassandra.sh
+Enter docker container
+
+	$ docker container exec -it <container-id> bash
+	$ vi /etc/cassandra/cassandra.yaml
+Change the following fields from localhost to endpoint of Cassandra host private ip in the yaml file
++ listen_address (line 599)
++ broadcast_address (line 613)
++ broadcast_rpc_address (line 695)
++ rpc_address (line 676)
++ seeds (line 425)
+
+Set the following fields to true
++ listen_on_broadcast_address (line 621)
++ start_rpc (line 662)
+
+Restart docker container
+
+	$ docker container restart <container-id>
+Wait till the following command succeeds
+	
+	$ netcat -v -w 1 <host-ip> 9042
+
+## Run Graphite on Host 3
+	$ cd cloudsuite/benchmarks/django-workload/graphite/
+	$ ./build_graphite.sh
+	$ ./run_graphite.sh
+
+## Run uwsgi on Host 4
+	$ cd cloudsuite/benchmarks/django-workload/uwsgi/
+	$ ./build_uwsgi.sh
+Edit uwsgi.cfg with endpoints of Graphite, Cassandra, Memcached and Seige
+
+	$ ./run_uwsgi.sh
+
+## Run siege on Host 5
+	$ cd cloudsuite/benchmarks/django-workload/siege/
+	$ ./build_siege.sh
+Edit seige.cfg with endpoints of Uwsgi
+
+	$ ./run_siege.sh
+
+
 # Note
 Please note that the latest Python version that was used to test the
 installation scripts was 3.6.3. Subsequent versions have not been tested. All

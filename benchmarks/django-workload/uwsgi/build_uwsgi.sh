@@ -5,7 +5,7 @@
 if [[ $# -lt 1 ]]
 then
     cp Dockerfile.default Dockerfile
-    sudo docker build --no-cache -t uwsgi-webtier .
+    sudo docker build --network host --no-cache -t uwsgi-webtier .
 # custom Python build
 else
     rm -rf cpython
@@ -29,7 +29,7 @@ else
     fi
     cd uwsgi/
     echo "Building image for uwsgi-webtier"
-    sudo docker build --no-cache -t uwsgi-webtier                        \
+    sudo docker build --network host --no-cache -t uwsgi-webtier                        \
                  --build-arg cpython_install="cpython"              \
                  --build-arg platform_triplet="$PLATFORM_TRIPLET"   \
                  --build-arg python_soabi="$PYTHON_SOABI"           \

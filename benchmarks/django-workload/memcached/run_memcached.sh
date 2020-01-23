@@ -4,7 +4,7 @@
 # Parameters: $1 = the IP; $2 = the port; $3 = the name of the service
 
 wait_port() {
-  while ! ncat -w 5 "$1" "$2"; do
+  while ! netcat -w 5 "$1" "$2"; do
     echo "Waiting for $3 ..."
     sleep 3
   done
