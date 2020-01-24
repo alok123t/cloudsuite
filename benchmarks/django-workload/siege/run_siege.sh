@@ -16,6 +16,6 @@ wait_port() {
 echo "Starting siege container"
 sudo docker run -ti --name siege_container --volume=/tmp:/tmp --privileged 		\
            --network host -e ATTEMPTS=10                             		\
-           -e TARGET_ENDPOINT=localhost -e SIEGE_WORKERS=10 	\
+           -e TARGET_ENDPOINT=$UWSGI_ENDPOINT -e SIEGE_WORKERS=10 	\
            siege-webtier
 

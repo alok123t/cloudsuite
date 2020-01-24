@@ -12,7 +12,7 @@ if [[ $# -lt 1 ]]
 then
     cp uwsgi/Dockerfile.default uwsgi/Dockerfile
     cd uwsgi/
-    sudo docker build --no-cache -t uwsgi-webtier .
+    sudo docker build --network host --no-cache -t uwsgi-webtier .
     cd ../
 # custom Python build
 else
@@ -36,7 +36,7 @@ else
     fi
     cd uwsgi/
     echo "Building image for uwsgi-webtier"
-    sudo docker build --no-cache -t uwsgi-webtier                        \
+    sudo docker build --network host --no-cache -t uwsgi-webtier                        \
                  --build-arg cpython_install="cpython"              \
                  --build-arg platform_triplet="$PLATFORM_TRIPLET"   \
                  --build-arg python_soabi="$PYTHON_SOABI"           \
@@ -53,7 +53,7 @@ then
     do
         cd "$d"
         echo "Building image for $d-webtier"
-        sudo docker build --no-cache -t "$d"-webtier .
+        sudo docker build --network host --no-cache -t "$d"-webtier .
         echo "-------------------------------------------------------------"
         echo
         cd ../ 

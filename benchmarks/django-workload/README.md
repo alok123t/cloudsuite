@@ -45,6 +45,11 @@ docker files and all necessary dependencies to build and deploy all the docker i
 to run the Django Workload. Each entity (Cassandra, uWSGI, Memcached, Siege, Graphite) is set up
 in a separate container.
 
+4. For running all components on a single VM
+	```
+	$ ./run_containers.sh
+	```
+
 For instructions on how to install docker, please refer to:
 <https://docs.docker.com/engine/installation/linux/ubuntu/>
 
@@ -58,28 +63,10 @@ For instructions on how to install docker, please refer to:
 ## Run Cassandra on Host 2
 	$ cd cloudsuite/benchmarks/django-workload/cassandra/
 	$ ./build_cassandra.sh
-	$ ./run_cassandra.sh
-Enter docker container
+	$ ./run_cassandra.sh 8 <cassandra-host-private-ip>
 
-	$ docker container exec -it <container-id> bash
-	$ vi /etc/cassandra/cassandra.yaml
-Change the following fields from localhost to endpoint of Cassandra host private ip in the yaml file
-+ listen_address (line 599)
-+ broadcast_address (line 613)
-+ broadcast_rpc_address (line 695)
-+ rpc_address (line 676)
-+ seeds (line 425)
-
-Set the following fields to true
-+ listen_on_broadcast_address (line 621)
-+ start_rpc (line 662)
-
-Restart docker container
-
-	$ docker container restart <container-id>
-Wait till the following command succeeds
-	
-	$ netcat -v -w 1 <host-ip> 9042
+	# arg1: SYSTEM_MEMORY for cassandra in GB (example: 8)
+	# arg2: cassandra-host-private-ip (example: 192.168.XXX.XXX)
 
 ## Run Graphite on Host 3
 	$ cd cloudsuite/benchmarks/django-workload/graphite/
@@ -88,18 +75,22 @@ Wait till the following command succeeds
 
 ## Run uwsgi on Host 4
 	$ cd cloudsuite/benchmarks/django-workload/uwsgi/
-	$ ./build_uwsgi.sh
-Edit uwsgi.cfg with endpoints of Graphite, Cassandra, Memcached and Seige
++ Edit uwsgi.cfg with endpoints of Graphite, Cassandra, Memcached and Seige
++ Edit files/django-workload/cluster_settings_template.py with endpoint of uwsgi host in ALLOWED_HOSTS (add uwsgi-private-host-ip to array in line 15)
 
-	$ ./run_uwsgi.sh
+```
+$ ./build_uwsgi.sh
+$ ./run_uwsgi.sh
+```
 
 ## Run siege on Host 5
 	$ cd cloudsuite/benchmarks/django-workload/siege/
-	$ ./build_siege.sh
-Edit seige.cfg with endpoints of Uwsgi
++ Edit seige.cfg with endpoints of Uwsgi
 
-	$ ./run_siege.sh
-
+```
+$ ./build_siege.sh
+$ ./run_siege.sh
+```
 
 # Note
 Please note that the latest Python version that was used to test the

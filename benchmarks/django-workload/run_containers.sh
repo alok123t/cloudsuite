@@ -18,15 +18,15 @@ echo "Starting memcached container"
 sudo docker run -tid -h memcached --name memcached_container --network              \
        django_network --ip 10.10.10.10 memcached-webtier
 
-# wait_port 10.10.10.10 11211 memcached
+wait_port 10.10.10.10 11211 memcached
 echo "Memcached is up and running!"
 
 # Start cassandra container
 echo "Starting cassandra container"
-sudo docker run -tid --privileged -h cassandra -e SYSTEM_MEMORY=8 --name cassandra_container           \
+sudo docker run -tid --privileged -h cassandra -e SYSTEM_MEMORY=8 -e ENDPOINT=10.10.10.11 --name cassandra_container           \
            --network django_network --ip 10.10.10.11 cassandra-webtier
 
-# wait_port 10.10.10.11 9042 cassandra
+wait_port 10.10.10.11 9042 cassandra
 echo "Cassandra is up and running!"
 
 # Start graphite container
@@ -34,7 +34,7 @@ echo "Starting graphite container"
 sudo docker run -tid -h graphite --name graphite_container --network django_network \
            --ip 10.10.10.12 graphite-webtier
 
-# wait_port 10.10.10.12 80 graphite
+wait_port 10.10.10.12 80 graphite
 echo "Graphite is up and running!"
 
 # Start uwsgi container
@@ -45,7 +45,7 @@ sudo docker run -tid -h uwsgi --name uwsgi_container --network django_network   
            -e MEMCACHED_ENDPOINT="10.10.10.10:11211"                            \
            -e SIEGE_ENDPOINT=10.10.10.14 uwsgi-webtier
 
-# wait_port 10.10.10.13 8000 uwsgi
+wait_port 10.10.10.13 8000 uwsgi
 
 echo "uWSGI is up and running!"
 

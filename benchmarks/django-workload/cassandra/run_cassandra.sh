@@ -15,10 +15,19 @@ echo "Starting cassandra container"
 
 if [ -n "$1" ]
 then
-	sudo docker run -tid --privileged --name cassandra_container -e SYSTEM_MEMORY=$1 --network host cassandra-webtier
-else
-        sudo docker run -tid --privileged --name cassandra_container -e SYSTEM_MEMORY=8 --network host cassandra-webtier
+  SYSTEM_MEMORY=$1
+else 
+  SYSTEM_MEMORY=8
 fi
 
-wait_port localhost 9042 cassandra
+if [ -n "$2" ]
+then 
+  ENDPOINT=$2
+else 
+  ENDPOINT=localhost
+fi
+
+sudo docker run -tid --privileged --name cassandra_container -e SYSTEM_MEMORY=$SYSTEM_MEMORY -e ENDPOINT=$ENDPOINT --network host cassandra-webtier
+
+wait_port $ENDPOINT 9042 cassandra
 echo "Cassandra is up and running!"
