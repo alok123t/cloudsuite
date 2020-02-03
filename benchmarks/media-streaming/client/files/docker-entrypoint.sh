@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 if [ "$1" = "bash" ]; then
   exec $@
@@ -10,4 +11,3 @@ else
   fi
   cd /root/run && exec ./benchmark.sh $1
 fi
-z
