@@ -93,7 +93,7 @@ Run Client
     $ docker pull cloudsuite/media-streaming:client
     $ docker run -t --name=streaming_client -v /path/to/output:/output --net host cloudsuite/media-streaming:client ${SERVER_IP} True
 
-Note: If client docker container exits by giving this error "cp: cannot stat '/root/logs/cl\*': No such file or directory."
+Note: If client docker container exits by giving this error "cp: cannot stat '/root/logs/cl\*': No such file or directory." <br/>
       Then copy the "logs" folder using the rsync command and re-build the client container.
 
   [datasetdocker]: https://github.com/parsa-epfl/cloudsuite/blob/master/benchmarks/media-streaming/dataset/Dockerfile "Dataset Dockerfile"  
