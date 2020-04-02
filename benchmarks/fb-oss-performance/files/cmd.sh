@@ -1,6 +1,5 @@
 # mysql 
 mysql -h10.52.2.161 -uroot -proot -e "SET GLOBAL max_connections = 1001;"
-mysql -h10.52.2.161 -uroot -proot -e "show variables like 'max_connections';"
 
 # run hhvm 
 hhvm perf.php --i-am-not-benchmarking \
