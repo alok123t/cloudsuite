@@ -1,9 +1,10 @@
 #!/bin/bash
 
+# Refer to https://docs.hhvm.com/hhvm/advanced-usage/fastCGI
+
 update-rc.d hhvm defaults
 cat /etc/nginx/sites-enabled/default ~/nginx_backup
-cat /tmp/nginx_sites_avail_hhvm.append >> /etc/nginx/sites-available/default
-/usr/share/hhvm/install_fastcgi.sh
+cat /tmp/nginx_sites_avail_hhvm.append > /etc/nginx/sites-available/default
+/opt/hhvm/4.56.0/share/hhvm/install_fastcgi.sh
 echo "hhvm.server.allow_run_as_root = true" >> /etc/hhvm/server.ini
 /usr/bin/hhvm --config /etc/hhvm/php.ini --config /etc/hhvm/server.ini --mode daemon -vPidFile=/var/run/hhvm/pid
-

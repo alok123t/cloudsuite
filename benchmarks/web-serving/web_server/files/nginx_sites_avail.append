@@ -1,50 +1,76 @@
 server {
-        listen 8080;
-        server_name localhost;
-        listen [::]:8080 default_server ipv6only=on;
+	listen 8080;
+	server_name localhost;
+	listen [::]:8080 default_server ipv6only=on;
 
-        root /usr/share/nginx/html/elgg;
-                # Server root, replace it with your elgg installation location
-                index index.php index.html index.htm;
+	# Server root, replace it with your elgg installation location
+	root /usr/share/nginx/html/elgg;
+	index index.php index.html index.htm;
+	
+	gzip on;
+	gzip_types
+		# text/html is always compressed by HttpGzipModule
+		text/css
+		text/javascript
+		text/xml
+		text/plain
+		text/x-component
+		application/javascript
+		application/x-javascript
+		application/json
+		application/xml
+		application/rss+xml
+		font/truetype
+		font/opentype
+		application/vnd.ms-fontobject
+		image/svg+xml;
 
-                # Server logs, replace it with your project names
-                error_log /var/log/nginx/example_error.log;
-                access_log /var/log/nginx/example_access.log;
+	# Server logs, replace it with your project names
+	error_log /var/log/nginx/example_error.log;
+	access_log /var/log/nginx/example_access.log;
 
-                location ~ (^\.|/\.) {
-                        return 403;
-                }
+	# Max post size
+	client_max_body_size 8M;
 
-                location /cache {
-                        rewrite ^/cache\/(.*)$ /engine/handlers/cache_handler.php?request=$1&$query_string;
-                }
+	location ~ /.well-known {
+        	allow all;
+	}
 
-                location /export {
-                        rewrite ^/export\/([A-Za-z]+)\/([0-9]+)\/?$ /engine/handlers/export_handler.php?view=$1&guid=$2;
-                        rewrite ^/export\/([A-Za-z]+)\/([0-9]+)\/([A-Za-z]+)\/([A-Za-z0-9\_]+)\/$ /engine/handlers/export_handler.php?view=$1&guid=$2&type=$3&idname=$4;
-                }
+	location ~ (^\.|/\.) {
+		return 403;
+	}
 
-                location = /rewrite.php {
-                        rewrite ^(.*)$ /install.php;
-                }
+	location = /rewrite.php {
+		rewrite ^(.*)$ /install.php;
+	}
 
-                location / {
-                        try_files $uri $uri/ /index.php?__elgg_uri=$uri&$query_string;
-                }
+	location / {
+		try_files $uri $uri/ @elgg;
+	}
 
-                # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
-                #
-                location ~ \.php$ {
+	location /cache/ {
+		disable_symlinks off;
+		expires 1y;
+		try_files $uri $uri/ @elgg;
+	}
 
-                        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-                       # NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
+	# pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+	location ~ \.php$ {
+		#try_files $uri @elgg;
+		#fastcgi_index index.php;
+		include /etc/nginx/snippets/fastcgi-php.conf;
+		fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+		#fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		#include /etc/nginx/fastcgi_params;
+	}
 
-                       # With php5-cgi alone:
-                #       fastcgi_pass 127.0.0.1:9000;
-                       # With php5-fpm:
-                       fastcgi_pass unix:/var/run/php5-fpm.sock;
-                       fastcgi_index index.php;
-                       include fastcgi_params;
-                }
+	location @elgg {
+		#fastcgi_pass localhost:9000;
 
-        }
+		include /etc/nginx/fastcgi_params;
+		include /etc/nginx/snippets/fastcgi-php.conf;
+		fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+		fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+		fastcgi_param SCRIPT_NAME     /index.php;
+	}
+}

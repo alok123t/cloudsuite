@@ -30,4 +30,3 @@ sed -i "s/<port.*/<port>8080<\\/port>/" /web20_benchmark/deploy/run.xml
 sed -i "s@<outputDir.*@<outputDir>${FABAN_HOME}\/output<\\/outputDir>@" /web20_benchmark/deploy/run.xml
 cd /web20_benchmark && ant run
 cat $FABAN_HOME/output/*/summary.xml
-

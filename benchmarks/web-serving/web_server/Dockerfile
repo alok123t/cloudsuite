@@ -1,33 +1,45 @@
-FROM ubuntu:14.04
+FROM cloudsuite/debian:base-os
 LABEL maintainer="Mark Sutherland <mark.sutherland@epfl.ch>"
 
-USER root
-
-RUN apt-get update && \
-	apt-get install -y --force-yes software-properties-common && \
-	apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xB4112585D386EB94 && \
-	add-apt-repository "deb http://dl.hhvm.com/ubuntu $(lsb_release -sc)-lts-3.30 main" && \
-	apt-get update && \
-	apt-get install --force-yes -y \
+RUN apt-get update \
+	&& apt-get install -y \
+	software-properties-common \
+	gnupg2 \
 	build-essential \
 	git \
 	nginx \
-	php5 php5-gd \
-	php5-mysql php5-curl \
-	php5-fpm php5-memcache \
-	hhvm \
-	mysql-server
+	unzip \
+	wget
+
+# Install hhvm
+ENV HHVM_VERSION 4.56
+RUN apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xB4112585D386EB94 \
+	&& add-apt-repository "deb http://dl.hhvm.com/debian $(lsb_release -sc)-${HHVM_VERSION} main" \
+	&& apt-get update \
+	&& apt-get install -y hhvm
+
+# Install php
+RUN apt-get install -y \
+	php7.3 php7.3-gd php7.3-mysql php7.3-curl php7.3-fpm haveged php-memcached
+
+RUN rm -rf /var/lib/apt/lists/*
 
 # Increase the open file limit
 COPY files/limits.conf.append /tmp/
 RUN cat /tmp/limits.conf.append >> /etc/security/limits.conf && rm -f /tmp/limits.conf.append
 
+RUN apt-get update && apt-get install -y vim
+
 # Checkout the Elgg installation
-COPY files/elgg_installation /usr/share/nginx/html/elgg
+RUN cd /usr/share/nginx/html/ \
+	&& wget -q --show-progress --progress=bar:force -O elgg-3.3.6.zip https://elgg.org/about/getelgg?forward=elgg-3.3.6.zip \
+	&& unzip elgg-3.3.6.zip \
+	&& rm -rf elgg-3.3.6.zip \
+	&& mv elgg-3.3.6 elgg
 
 WORKDIR /usr/share/nginx/html
 # Copy over the settings.php
-COPY files/settings.php elgg/engine/settings.php
+COPY files/settings.php elgg/elgg-config/settings.php
 
 # Make the Elgg data directory
 RUN mkdir /elgg_data
@@ -40,11 +52,9 @@ COPY files/nginx_sites_avail.append /tmp/
 COPY files/nginx_sites_avail_hhvm.append /tmp/
 COPY files/configure_hhvm.sh /tmp/
 
-ADD files/elgg_db.dump /elgg_db.dump
-
 RUN service nginx restart
 
-RUN service php5-fpm restart
+RUN service php7.3-fpm start
 
 ADD bootstrap.sh /etc/bootstrap.sh
 RUN chown root:root /etc/bootstrap.sh

@@ -34,14 +34,10 @@ server {
 
         # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
         #
-        # location ~ \.(hh|php)$ {
-        #        root /usr/share/nginx/html/elgg;
-        #        fastcgi_keep_conn on;
-        #        fastcgi_pass   127.0.0.1:9000;
-        #        # or if you used a unix socket
-        #        # fastcgi_pass   unix:/var/run/hhvm/sock;
-        #        fastcgi_index  index.php;
-        #        fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        #        include        fastcgi_params;
-        #}                
+        location ~ \.php$ {
+                fastcgi_split_path_info ^(.+\.php)(/.+)$;
+                fastcgi_pass unix:/run/php/php7.3-fpm.sock;
+                fastcgi_index index.php;
+                include fastcgi.conf;
+        }
 }
