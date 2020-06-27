@@ -24,7 +24,7 @@ RUN wget https://packages.sury.org/php/apt.gpg \
 	&& rm apt.gpg \
 	&& echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php7.list \
 	&& apt-get update \
-	&& apt-get install -y php7.4 php7.4-gd php7.4-mysql php7.4-curl php7.4-fpm php-memcached \
+	&& apt-get install -y php5.6 php5.6-curl php5.6-fpm php5.6-gd php5.6-mysql php-memcached \
 	&& mkdir -p /run/php
 
 RUN rm -rf /var/lib/apt/lists/*
@@ -35,16 +35,11 @@ RUN cat /tmp/limits.conf.append >> /etc/security/limits.conf && rm -f /tmp/limit
 
 RUN apt-get update && apt-get install -y vim
 
-# Checkout the Elgg installation
-RUN cd /usr/share/nginx/html/ \
-	&& wget -q --show-progress --progress=bar:force -O elgg-3.3.6.zip https://elgg.org/about/getelgg?forward=elgg-3.3.6.zip \
-	&& unzip elgg-3.3.6.zip \
-	&& rm -rf elgg-3.3.6.zip \
-	&& mv elgg-3.3.6 elgg
+COPY files/elgg_installation /usr/share/nginx/html/elgg
 
 WORKDIR /usr/share/nginx/html
 # Copy over the settings.php
-COPY files/settings.php elgg/elgg-config/settings.php
+COPY files/settings.php elgg/engine/settings.php
 
 # Make the Elgg data directory
 RUN mkdir /elgg_data
@@ -59,7 +54,7 @@ COPY files/configure_hhvm.sh /tmp/
 
 RUN service nginx restart
 
-# RUN service php7.4-fpm restart
+RUN service php5.6-fpm restart
 
 ADD bootstrap.sh /etc/bootstrap.sh
 RUN chown root:root /etc/bootstrap.sh
