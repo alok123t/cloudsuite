@@ -12,7 +12,7 @@
  * @todo Turn this into something we handle more automatically.
  */
 
-date_default_timezone_set('{{timezone}}');
+// date_default_timezone_set('{{timezone}}');
 
 global $CONFIG;
 if (!isset($CONFIG)) {
