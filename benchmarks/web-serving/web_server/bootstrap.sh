@@ -13,8 +13,8 @@ if [[ ! -z "${HHVM}" && "${HHVM}" = "true" ]]; then
 else
 	cat /tmp/nginx_sites_avail.append >> /etc/nginx/sites-available/default
 	FPM_CHILDREN=${3:-80}
-	sed -i -e"s/pm.max_children = 5/pm.max_children = ${FPM_CHILDREN}/" /etc/php/7.3/fpm/pool.d/www.conf
-	service php7.3-fpm restart
+	sed -i -e"s/pm.max_children = root/pm.max_children = ${FPM_CHILDREN}/" /etc/php/7.4/fpm/pool.d/www.conf
+	service php7.4-fpm start
 fi
 
 service nginx restart
