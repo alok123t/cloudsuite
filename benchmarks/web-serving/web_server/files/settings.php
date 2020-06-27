@@ -109,7 +109,6 @@ $CONFIG->memcache = true;
 //
 $CONFIG->memcache_servers = array (
 //	array('server1', 11211),
-//	array('10.22.17.71', 11211)
     array('memcache_server', 11211)
 );
 

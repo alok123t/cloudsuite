@@ -24,7 +24,7 @@ RUN wget https://packages.sury.org/php/apt.gpg \
 	&& rm apt.gpg \
 	&& echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php7.list \
 	&& apt-get update \
-	&& apt-get install -y php5.6 php5.6-curl php5.6-fpm php5.6-gd php5.6-mysql php-memcached \
+	&& apt-get install -y php5.6 php5.6-curl php5.6-fpm php5.6-gd php5.6-mysql php5.6-xml php-memcached \
 	&& mkdir -p /run/php
 
 RUN rm -rf /var/lib/apt/lists/*
